@@ -1,0 +1,19 @@
+# Ignore virtual environment
+/env/
+
+# Ignore log files
+*.log
+
+# Ignore temporary files
+*.tmp
+*.bak
+*.swp
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore credentials and configuration files
+credentials.json
+config.yml
+token.json
