@@ -1,6 +1,14 @@
 # Sunday Dinner
 
-A simple python script that reads from a Google sheet and reminds participants of upcoming dinners.
+A simple python script that reads from a Google sheet and reminds participants of upcoming dinners or other events. The script should be set up with a cron job to run once daily.
+
+The script will:
+
+1. Pull all events from the event sheet and find any events that are 2 days from today
+2. Find all members with birthdays in the next 21 days from the members sheet
+3. Compose an HTML message with the event details and upcoming birthdays
+4. Send an email reminder to all members where "Reminders = True"
+5. Post a message in a Discord channel
 
 ## Installation
 

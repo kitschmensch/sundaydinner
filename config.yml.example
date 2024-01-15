@@ -1,0 +1,27 @@
+# Config
+SCOPES: ["https://www.googleapis.com/auth/spreadsheets.readonly"]
+
+# https://docs.google.com/spreadsheets/d/{id_here}/edit#gid=548180339
+SPREADSHEET_ID: "arsntienarst"
+# Events sheet should at least have a Type and Date column. All other columns in the range will be added to the reminder text.
+EVENTS: "2024!A:H"
+
+#Members should have Full Name, Birthday, and Reminders columns
+MEMBERS: "Members!A:M"
+
+# Click on any channel and generate a webhook URL
+WEBHOOK_URL: "https://discord.com/api/webhooks/*******"
+
+SMTP_EMAIL: "example@example.com"
+SMTP_PASSWORD: "password123"
+SMTP_PORT: 465
+SMTP_SERVER: "smtp.gmail.com"
+
+# Will print messages to the console when sending an email
+EMAIL_DEBUG: False
+
+# To embed a hyperlink to the spreadsheet in reminders
+SPREADSHEET_URL: "https://docs.google.com/spreadsheets/d/token/edit?usp=sharing"
+
+# How far in advance to search for upcoming birthdays
+BIRTHDAY_DELTA: 21
