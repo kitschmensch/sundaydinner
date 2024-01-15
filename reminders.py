@@ -28,6 +28,7 @@ SMTP_PORT = config["SMTP_PORT"]
 SMTP_SERVER = config["SMTP_SERVER"]
 EMAIL_DEBUG = config["EMAIL_DEBUG"]
 BIRTHDAY_DELTA = config["BIRTHDAY_DELTA"]
+SPREADSHEET_URL = config["SPREADSHEET_URL"]
 
 
 def main():
@@ -184,7 +185,7 @@ def build_html_template(event, birthdays):
         <p>{birthday["Full Name"]} - {birthday["Birthday"]}</p>"""
 
     html_template += f"""    
-        <p><a href="https://docs.google.com/spreadsheets/d/1JHo75EbbTJ2jrwmxuFcgmuoq5aa3sTjcZ0h2VkpJqDk/edit?usp=sharing">Visit the spreadsheet to make changes.</a></p>
+        <p><a href="{SPREADSHEET_URL}">Visit the spreadsheet to make changes.</a></p>
     </div>
     </body>
     </html>

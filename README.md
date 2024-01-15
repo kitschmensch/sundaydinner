@@ -45,6 +45,7 @@ A simple python script that reads from a Google sheet and reminds participants o
 - SMTP_SERVER: "smtp.gmail.com"
 - EMAIL_DEBUG: False
 - BIRTHDAY_DELTA: 21
+- SPREADSHEET_URL: "https://docs.google.com/spreadsheets/d/token/edit?usp=sharing"
 
 Replace `your-database-url` with the URL of your database and `your-api-key` with your API key.
 
