@@ -71,6 +71,8 @@ def main():
                 [x["Email"] for x in members],
             )
 
+        post_to_discord(events, birthdays)
+
     except HttpError as err:
         print(err)
 
@@ -119,9 +121,21 @@ def find_birthdays(data, delta=14):
     return filtered_entries
 
 
-def post_to_discord():
+def post_to_discord(events, birthdays):
+    content_string = ""
+    content_string += f"**Upcoming Events!**\n\n"
+    for event in events:
+        content_string += f"**{event['Type']}**: {event['Date']}\n"
+        for key, value in event.items():
+            if key not in ["Type", "Date"]:
+                content_string += f"**{key}**: {value}\n"
+    if birthdays:
+        content_string += f"\n**Upcoming Birthdays!!**\n"
+        for birthday in birthdays:
+            content_string += f"{birthday['Full Name']} - {birthday['Birthday']}\n"
+
     data = {
-        "content": "**Reminder!**\n\nDate:\nTime:\nLocation:\nHost:\nMeal:\nNote:",
+        "content": content_string,
         "username": "Sunday Dinner Bot",
     }
     headers = {"Content-Type": "application/json"}
