@@ -32,7 +32,7 @@ A simple python script that reads from a Google sheet and reminds participants o
 
 1. Create a `config.yml` file in the project root directory.
 
-2. Set the following environment variables in the `.env` file:
+2. Set the following environment variables in the `config.yml` file:
 
 - SCOPES: ["https://www.googleapis.com/auth/spreadsheets.readonly"]
 - SPREADSHEET_ID: from spreadsheet URL
