@@ -26,41 +26,65 @@ The script will:
 
 ## Configuration
 
-1. Create a `config.yml` file in the project root directory.
+1. Create a `config.yml` file in the project root directory. For your convenience, use the included `config.yml.example`.
 
 2. Change the following environment variables in the `config.yml` file:
 
-- SCOPES: ["https://www.googleapis.com/auth/spreadsheets.readonly"]
-- SPREADSHEET_ID: from spreadsheet URL
-- EVENTS: "2024!A:H"
-- MEMBERS: "Members!A:M"
-- WEBHOOK_URL: "https://discord.com/api/webhooks/abc123"
-- SMTP_EMAIL: "email@email.com"
-- SMTP_PASSWORD: "password123"
-- SMTP_PORT: 465
-- SMTP_SERVER: "smtp.gmail.com"
-- EMAIL_DEBUG: False
-- BIRTHDAY_DELTA: 21
-- SPREADSHEET_URL: "https://docs.google.com/spreadsheets/d/token/edit?usp=sharing"
+```
+# Config
+SCOPES: ["https://www.googleapis.com/auth/spreadsheets.readonly"]
+
+# https://docs.google.com/spreadsheets/d/{id_here}/edit#gid=548180339
+SPREADSHEET_ID: "arsntienarst"
+# Events sheet should at least have a Type and Date column. All other columns in the range will be added to the reminder text.
+EVENTS: "2024!A:H"
+
+#Members should have Full Name, Birthday, and Reminders columns
+MEMBERS: "Members!A:M"
+
+# Click on any channel and generate a webhook URL
+WEBHOOK_URL: "https://discord.com/api/webhooks/*******"
+
+SMTP_EMAIL: "example@example.com"
+SMTP_PASSWORD: "password123"
+SMTP_PORT: 465
+SMTP_SERVER: "smtp.gmail.com"
+
+# Will print messages to the console when sending an email
+EMAIL_DEBUG: False
+
+# To embed a hyperlink to the spreadsheet in reminders
+SPREADSHEET_URL: "https://docs.google.com/spreadsheets/d/token/edit?usp=sharing"
+
+# How far in advance to search for upcoming birthdays
+BIRTHDAY_DELTA: 21
+
+#Logging level:
+LOGGING_LEVEL: INFO
+```
 
 ## Running the Reminder Script on a Cron Job
 
-To schedule the `reminders.py` script to run on a cron job, follow these steps:
+For easy updates, use the `update_and_run.sh` bash script to fetch/merge changes from the repo and run the script. Using a cron job is an easy way to check daily for reminders.
 
-1. Open the crontab file for editing:
+1. Make the bash script executable
+
+   ```bash
+   chmod +x update_and_run.sh
+   ```
+
+2. Open the crontab file for editing:
 
    ```bash
    crontab -e
    ```
 
-2. Add the following line to the crontab file:
+3. Add the following line to the crontab file to run the script daily at 5pm:
 
    ```plaintext
-   * * * * * /path/to/python /path/to/sundaydinner/reminders.py
+   0 17 * * * /bin/bash /home/user/update_and_run.sh
    ```
 
-   Replace `/path/to/python` with the path to your Python executable and `/path/to/sundaydinner/reminders.py` with the full path to the `reminders.py` script.
+   Replace `/home/user/update_and_run.sh` with the full path to the `update_and_run.sh` script.
 
-3. Save and exit the crontab file.
-
-The `reminders.py` script will now run at the specified interval as per the cron job configuration.
+4. Save and exit the crontab file.
