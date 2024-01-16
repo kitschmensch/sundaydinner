@@ -57,7 +57,7 @@ def main():
 
     logging.info("Credentials valid. Fetching data from Google Sheets")
     try:
-        service = build("sheets", "v4", credentials=creds)
+        service = build("sheets", "v4", credentials=creds, cache_discovery=False)
         sheet = service.spreadsheets()
         eventResult = (
             sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=EVENTS).execute()
