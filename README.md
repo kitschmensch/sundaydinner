@@ -40,7 +40,7 @@ The script will:
 
 1. Create a `config.yml` file in the project root directory.
 
-2. Set the following environment variables in the `config.yml` file:
+2. Change the following environment variables in the `config.yml` file:
 
 - SCOPES: ["https://www.googleapis.com/auth/spreadsheets.readonly"]
 - SPREADSHEET_ID: from spreadsheet URL
@@ -54,8 +54,6 @@ The script will:
 - EMAIL_DEBUG: False
 - BIRTHDAY_DELTA: 21
 - SPREADSHEET_URL: "https://docs.google.com/spreadsheets/d/token/edit?usp=sharing"
-
-Replace `your-database-url` with the URL of your database and `your-api-key` with your API key.
 
 ## Running the Reminder Script on a Cron Job
 

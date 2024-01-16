@@ -25,3 +25,6 @@ SPREADSHEET_URL: "https://docs.google.com/spreadsheets/d/token/edit?usp=sharing"
 
 # How far in advance to search for upcoming birthdays
 BIRTHDAY_DELTA: 21
+
+#Logging level:
+LOGGING_LEVEL: INFO
