@@ -18,19 +18,7 @@ The script will:
    git clone https://github.com/kitschmensch/sundaydinner.git
    ```
 
-2. Create a virtual environment:
-
-   ```bash
-   python3 -m venv venv
-   ```
-
-3. Activate the virtual environment:
-
-   ```bash
-   source venv/bin/activate
-   ```
-
-4. Install the required packages:
+2. Install the required packages:
 
    ```bash
    pip install -r requirements.txt

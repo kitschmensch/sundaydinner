@@ -77,13 +77,18 @@ def main():
         logging.info("Birthdays found: %s", len(birthdays))
         if events:
             for event in events:
-                email_body = build_html_template(events, birthdays)
+                email_body = build_html_template(event, birthdays)
                 send_email(
                     "Reminder: %s, %s" % (event["Type"], event["Date"]),
                     email_body,
                     [x["Email"] for x in members],
+                    event["Host Email"],
                 )
-            post_to_discord(events, birthdays)
+                content_string = build_event_message(event)
+                post_to_discord(content_string)
+            if birthdays:
+                content_string = build_birthday_message(birthdays)
+                post_to_discord(content_string)
 
     except HttpError as err:
         logging.error(err)
@@ -131,22 +136,32 @@ def find_birthdays(data, delta=14):
     return filtered_entries
 
 
-def post_to_discord(events, birthdays):
+def build_birthday_message(birthdays):
     content_string = ""
-    content_string += f"**Upcoming Events!**\n\n"
-    for event in events:
-        content_string += f"**{event['Type']}**: {event['Date']}\n"
-        for key, value in event.items():
-            if key not in ["Type", "Date"]:
-                content_string += f"**{key}**: {value}\n"
-    if birthdays:
-        content_string += f"\n**Upcoming Birthdays!!**\n"
-        for birthday in birthdays:
-            content_string += f"{birthday['Full Name']} - {birthday['Birthday']}\n"
+    content_string += f"### **Birthdays!**\n\n"
 
+    for birthday in birthdays:
+        content_string += f"> - **{birthday['Full Name']}**: {birthday['Birthday']}\n"
+    return content_string
+
+
+def build_event_message(event):
+    content_string = ""
+    content_string += f"## **Upcoming Event!**\n\n"
+
+    content_string += f"### **{event['Type']}**: {event['Date']}\n"
+    for key, value in event.items():
+        if key not in ["Type", "Date"]:
+            content_string += f"> **{key}**: {value}\n"
+    content_string += f"\n[Visit the spreadsheet to make changes.]({SPREADSHEET_URL})\n"
+    return content_string
+
+
+def post_to_discord(content_string):
     data = {
         "content": content_string,
         "username": "Sunday Dinner Bot",
+        "avatar_url": "https://i.imgur.com/d3N3x2b.jpg",
     }
     headers = {"Content-Type": "application/json"}
     logging.info("Posting message to Discord:")
@@ -155,6 +170,8 @@ def post_to_discord(events, birthdays):
     if response.status_code == 204:
         logging.info("Successfully posted message to Discord")
     else:
+        print(response.status_code)
+        print(response.content)
         logging.error(f"Failed to post message, status code: {response.status_code}")
         logging.error(response.content)
 
@@ -193,6 +210,7 @@ def build_html_template(event, birthdays):
     <body>
     <div class="container">
         <h1>Upcoming Event!</h1>
+        <p><i>To optionally RSVP, reply to this email to send a message to the host.</i></p>
         <table class="event-table">
             <tbody>"""
 
@@ -224,13 +242,14 @@ def build_html_template(event, birthdays):
     return html_template
 
 
-def send_email(subject, body, to_emails):
+def send_email(subject, body, to_emails, host):
     msg = MIMEMultipart()
     msg["From"] = SMTP_EMAIL
-    msg["To"] = ", ".join(to_emails)
+    msg["Reply-To"] = host
+    msg["Bcc"] = ", ".join(to_emails)
     msg["Subject"] = subject
     msg.attach(MIMEText(body, "html"))
-
+    print(msg.items())
     try:
         smtp = SMTP(SMTP_SERVER, SMTP_PORT)
         smtp.set_debuglevel(EMAIL_DEBUG)
