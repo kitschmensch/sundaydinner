@@ -18,6 +18,7 @@ with open("config.yml", "r") as config_file:
     config = yaml.safe_load(config_file)
 
 # Config
+API_KEY = config["API_KEY"]
 LOGGING_LEVEL = config["LOGGING_LEVEL"]
 SCOPES = config["SCOPES"]
 SPREADSHEET_ID = config["SPREADSHEET_ID"]
@@ -40,24 +41,10 @@ def main():
         format="%(asctime)s %(message)s",
         datefmt="%m/%d/%Y %I:%M:%S %p",
     )
-    creds = None
-    if os.path.exists("token.json"):
-        creds = Credentials.from_authorized_user_file("token.json", SCOPES)
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            logging.info("Refreshing credentials")
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
-            creds = flow.run_local_server(port=0)
-        # Save the credentials for the next run
-        with open("token.json", "w") as token:
-            logging.info("Saving credentials")
-            token.write(creds.to_json())
 
     logging.info("Credentials valid. Fetching data from Google Sheets")
     try:
-        service = build("sheets", "v4", credentials=creds, cache_discovery=False)
+        service = build("sheets", "v4", developerKey=API_KEY)
         sheet = service.spreadsheets()
         eventResult = (
             sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=EVENTS).execute()
