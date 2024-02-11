@@ -1,30 +1,22 @@
 # Config
-SCOPES: ["https://www.googleapis.com/auth/spreadsheets.readonly"]
 
-# https://docs.google.com/spreadsheets/d/{id_here}/edit#gid=548180339
-SPREADSHEET_ID: "arsntienarst"
-# Events sheet should at least have a Type and Date column. All other columns in the range will be added to the reminder text.
-EVENTS: "2024!A:H"
+# Spreadsheet ID is found in the URL used to view the google sheet normally.
+# https://docs.google.com/spreadsheets/d/{id here}/edit#gid=548180339
+SPREADSHEET_ID: "arsdawfd02l4=0lva0fupn[02l34[ygu]]"
 
-#Members should have Full Name, Birthday, and Reminders columns
-MEMBERS: "Members!A:M"
+# Google Sheets API key generated in Google Console
+API_KEY: "AIzaSyDXrkoOWMIaZ8ywk-cXAaudkVW5hebwCnI"
 
-# Click on any channel and generate a webhook URL
-WEBHOOK_URL: "https://discord.com/api/webhooks/*******"
 
-SMTP_EMAIL: "example@example.com"
-SMTP_PASSWORD: "password123"
+EVENTS_RANGE: "2024"
+MEMBERS_RANGE: "Members"
+WEBHOOK_URL: "https://discord.com/api/webhooks/abc123"
+SMTP_EMAIL: "email@site.com"
+SMTP_PASSWORD: "abc123"
 SMTP_PORT: 465
-SMTP_SERVER: "smtp.gmail.com"
-
-# Will print messages to the console when sending an email
+SMTP_SERVER: "smtp.site.com"
 EMAIL_DEBUG: False
 
-# To embed a hyperlink to the spreadsheet in reminders
-SPREADSHEET_URL: "https://docs.google.com/spreadsheets/d/token/edit?usp=sharing"
-
-# How far in advance to search for upcoming birthdays
+# How can in advance to check for birthdays
 BIRTHDAY_DELTA: 21
-
-#Logging level:
 LOGGING_LEVEL: INFO
