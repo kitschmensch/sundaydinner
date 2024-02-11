@@ -1,9 +1,3 @@
-import os.path
-from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
-from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
 import datetime
 import requests
 import json
@@ -18,11 +12,10 @@ with open("config.yml", "r") as config_file:
     config = yaml.safe_load(config_file)
 
 # Config
-LOGGING_LEVEL = config["LOGGING_LEVEL"]
-SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"]
 SPREADSHEET_ID = config["SPREADSHEET_ID"]
-EVENTS = config["EVENTS"]
-MEMBERS = config["MEMBERS"]
+API_KEY = config["API_KEY"]
+EVENTS_RANGE = config["EVENTS_RANGE"]
+MEMBERS_RANGE = config["MEMBERS_RANGE"]
 WEBHOOK_URL = config["WEBHOOK_URL"]
 SMTP_EMAIL = config["SMTP_EMAIL"]
 SMTP_PASSWORD = config["SMTP_PASSWORD"]
@@ -30,7 +23,8 @@ SMTP_PORT = config["SMTP_PORT"]
 SMTP_SERVER = config["SMTP_SERVER"]
 EMAIL_DEBUG = config["EMAIL_DEBUG"]
 BIRTHDAY_DELTA = config["BIRTHDAY_DELTA"]
-SPREADSHEET_URL = config["SPREADSHEET_URL"]
+LOGGING_LEVEL = config["LOGGING_LEVEL"]
+SPREADSHEET_URL = f"https://docs.google.com/spreadsheets/d/{SPREADSHEET_ID}/edit#gid=548180339"
 
 
 def main():
@@ -40,62 +34,40 @@ def main():
         format="%(asctime)s %(message)s",
         datefmt="%m/%d/%Y %I:%M:%S %p",
     )
-    creds = None
-
-    if os.path.exists("token.json"):
-        creds = Credentials.from_authorized_user_file("token.json", SCOPES)
-    # If there are no (valid) credentials available, let the user log in.
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                "credentials.json", SCOPES
-            )
-        creds = flow.run_local_server(port=0)
-        # Save the credentials for the next run
-        with open("token.json", "w") as token:
-            token.write(creds.to_json())
-
-
-    logging.info("Credentials valid. Fetching data from Google Sheets")
     try:
-        service = build("sheets", "v4", credentials=creds, cache_discovery=False)
-        sheet = service.spreadsheets()
-        eventResult = (
-            sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=EVENTS).execute()
-        )
-        memberResult = (
-            sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=MEMBERS).execute()
-        )
-        events = eventResult.get("values", [])
+        events = get_sheet(EVENTS_RANGE)
         events = convert_to_objects(events)
         events = find_upcoming_events(events)
-        members = memberResult.get("values", [])
+        members = get_sheet(MEMBERS_RANGE)
         members = convert_to_objects(members)
-        birthdays = find_birthdays(members, BIRTHDAY_DELTA)
-        members = find_members_with_reminders(members)
-        logging.info("Events found: %s", len(events))
-        logging.info("Members with reminders found: %s", len(members))
-        logging.info("Birthdays found: %s", len(birthdays))
-        if events:
-            for event in events:
-                email_body = build_html_template(event, birthdays)
-                send_email(
-                    "Reminder: %s, %s" % (event["Type"], event["Date"]),
-                    email_body,
-                    [x["Email"] for x in members],
-                    event["Host Email"],
-                )
-                content_string = build_event_message(event)
-                post_to_discord(content_string)
-            if birthdays:
-                content_string = build_birthday_message(birthdays)
-                post_to_discord(content_string)
+    except Exception as e:
+        logging.info("An error occurred: %s", str(e))
+    
+    birthdays = find_birthdays(members, BIRTHDAY_DELTA)
+    members = find_members_with_reminders(members)
+    logging.info("Events found: %s", len(events))
+    logging.info("Members with reminders found: %s", len(members))
+    logging.info("Birthdays found: %s", len(birthdays))
+    if events:
+        for event in events:
+            email_body = build_html_template(event, birthdays)
+            send_email(
+                "Reminder: %s, %s" % (event["Type"], event["Date"]),
+                email_body,
+                [x["Email"] for x in members],
+                event["Host Email"],
+            )
+            content_string = build_event_message(event)
+            post_to_discord(content_string)
+        if birthdays:
+            content_string = build_birthday_message(birthdays)
+            post_to_discord(content_string)
 
-    except HttpError as err:
-        logging.error(err)
-
+def get_sheet(range_name):
+    url = f'https://sheets.googleapis.com/v4/spreadsheets/{SPREADSHEET_ID}/values/{range_name}?key={API_KEY}'
+    response = requests.get(url)
+    data = json.loads(response.text)
+    return data.get("values", [])
 
 # Converts plain arrays into objects with keys from the first row
 def convert_to_objects(values):
